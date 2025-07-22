@@ -1,0 +1,30 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/ECS", "CPUUtilization", "ServiceName", "nifty500-service"],
+          ["AWS/ECS", "MemoryUtilization", "ServiceName", "nifty500-service"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "ECS Resource Utilization"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "nifty500-alb"],
+          ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "nifty500-alb"]
+        ],
+        "period": 300,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Application Load Balancer Metrics"
+      }
+    }
+  ]
+}

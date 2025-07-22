@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  nifty500-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    networks:
+      - nifty500-network
+
+  mlflow-server:
+    image: python:3.9-slim
+    ports:
+      - "5001:5001"
+    command: >
+      sh -c "pip install mlflow boto3 &&
+             mlflow server --host 0.0.0.0 --port 5001 
+             --default-artifact-root s3://nifty500-ml-artifacts/mlflow"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - nifty500-network
+
+networks:
+  nifty500-network:
+    driver: bridge

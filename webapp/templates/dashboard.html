@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIFTY 500 Advanced Stock Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --border-color: #30363d;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-orange: #ff7b72;
+            --accent-yellow: #f0e68c;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --gradient-primary: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+            --gradient-secondary: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+            --gradient-tertiary: linear-gradient(135deg, #8250df 0%, #6f42c1 100%);
+            --gradient-quaternary: linear-gradient(135deg, #da3633 0%, #cf222e 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: var(--gradient-secondary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--text-primary) !important;
+        }
+
+        .glass-card {
+            background: rgba(33, 38, 45, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+        }
+
+        .gradient-card {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .gradient-card.secondary { background: var(--gradient-secondary); }
+        .gradient-card.tertiary { background: var(--gradient-tertiary); }
+        .gradient-card.quaternary { background: var(--gradient-quaternary); }
+
+        .kpi-card {
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover { transform: scale(1.02); }
+
+        .kpi-card h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .kpi-card h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 4px;
+        }
+
+        .system-status {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .system-status.success {
+            border-color: var(--accent-green);
+            background: rgba(63, 185, 80, 0.1);
+        }
+
+        .table-container {
+            max-height: 420px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+        }
+
+        .table {
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--bg-tertiary);
+            border-color: var(--border-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .table tbody tr {
+            border-color: var(--border-color);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(88, 166, 255, 0.1);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25);
+            color: var(--text-primary);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-light {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-light:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin: 16px 0;
+        }
+
+        .chart-container h5 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            background: rgba(255, 123, 114, 0.1);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .kpi-card h2 { font-size: 1.5rem; }
+            .chart-container { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-chart-line"></i> NIFTY 500 Advanced Analytics
+            </span>
+            <span class="navbar-text text-light">
+                <i class="fas fa-moon"></i> Dark Mode Dashboard
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- System Status -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="systemStatus" class="system-status">
+                    <i class="fas fa-spinner fa-spin pulse"></i> Initializing system...
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Performance Indicators -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="kpi-card gradient-card">
+                    <h4><i class="fas fa-trophy"></i> Top CAGR</h4>
+                    <h2 id="topCAGR">Loading...</h2>
+                    <small id="topCAGRCompany">Loading...</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="kpi-card gradient-card secondary">
+                    <h4><i class="fas fa-shield-alt"></i> Best Sharpe</h4>
+                    <h2 id="bestSharpe">Loading...</h2>
+                    <small id="bestSharpeCompany">Loading...</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="kpi-card gradient-card tertiary">
+                    <h4><i class="fas fa-building"></i> Companies</h4>
+                    <h2 id="totalCompanies">Loading...</h2>
+                    <small>Analyzed</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="kpi-card gradient-card quaternary">
+                    <h4><i class="fas fa-industry"></i> Sectors</h4>
+                    <h2 id="totalSectors">Loading...</h2>
+                    <small>Covered</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sharpe Ratio Predictor Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5><i class="fas fa-calculator"></i> Next 30-Day Sharpe Ratio Predictor</h5>
+                    <p class="text-muted mb-4">Predict the risk-adjusted returns for the next 30 days based on historical patterns</p>
+                    
+                    <form id="sharpePredictionForm">
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Volatility (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="sharpe_volatility" required placeholder="25.5">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">CAGR (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="sharpe_cagr" required placeholder="15.0">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Max Drawdown (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="sharpe_max_drawdown" required placeholder="-10.5">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Beta</label>
+                                <input type="number" step="0.01" class="form-control" id="sharpe_beta" required placeholder="1.1">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Sector</label>
+                                <select class="form-control" id="sharpe_sector" required>
+                                    <option value="">Select Sector</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Banking">Banking</option>
+                                    <option value="Energy">Energy</option>
+                                    <option value="FMCG">FMCG</option>
+                                    <option value="Pharmaceuticals">Pharmaceuticals</option>
+                                    <option value="Automotive">Automotive</option>
+                                    <option value="Metals">Metals</option>
+                                    <option value="Construction">Construction</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end mb-3">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-magic"></i> Predict
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div id="sharpePredictionResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Row -->
+        <div class="row">
+            <!-- Top Performers -->
+            <div class="col-lg-6 mb-4">
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4><i class="fas fa-medal text-warning"></i> Top Performers</h4>
+                        <select id="metricSelector" class="form-select form-select-sm" style="max-width: 200px;">
+                            <option value="CAGR">By CAGR</option>
+                            <option value="Sharpe_Ratio">By Sharpe Ratio</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Company</th>
+                                    <th>Sector</th>
+                                    <th>CAGR %</th>
+                                    <th>Sharpe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topPerformersTable">
+                                <tr><td colspan="5" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin pulse"></i> Loading...
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAGR Predictor -->
+            <div class="col-lg-6 mb-4">
+                <div class="gradient-card tertiary">
+                    <h4><i class="fas fa-crystal-ball"></i> AI CAGR Predictor</h4>
+                    <p class="mb-4 opacity-75">ML model trained on 550 stocks</p>
+                    
+                    <form id="predictionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Volatility (%)</label>
+                                    <input type="number" class="form-control" id="volatility" step="0.01" required placeholder="25.5">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sharpe Ratio</label>
+                                    <input type="number" class="form-control" id="sharpe_ratio" step="0.01" required placeholder="1.2">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Max Drawdown (%)</label>
+                                    <input type="number" class="form-control" id="max_drawdown" step="0.01" required placeholder="-15.3">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Beta</label>
+                                    <input type="number" class="form-control" id="beta" step="0.01" required placeholder="1.1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sector</label>
+                            <select class="form-control" id="sector" required>
+                                <option value="">Select Sector</option>
+                                <option value="IT">Information Technology</option>
+                                <option value="Banking">Banking</option>
+                                <option value="Energy">Energy</option>
+                                <option value="FMCG">FMCG</option>
+                                <option value="Pharmaceuticals">Pharmaceuticals</option>
+                                <option value="Automotive">Automotive</option>
+                                <option value="Metals">Metals</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-light btn-lg w-100">
+                            <i class="fas fa-magic"></i> Predict CAGR
+                        </button>
+                    </form>
+                    
+                    <div id="predictionResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-scatter"></i> Risk vs Return Analysis</h5>
+                    <div id="performanceChart" style="height: 500px;">
+                        <div class="loading">
+                            <i class="fas fa-chart-line fa-3x pulse"></i>
+                            <p class="mt-3">Loading chart...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="chart-container">
+                    <h5><i class="fas fa-star"></i> Monthly Predictions</h5>
+                    <div id="monthlyPredictions">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin pulse"></i>
+                            <p class="mt-2">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sector Analysis Table -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="chart-container">
+                    <h5><i class="fas fa-table"></i> Sector Analysis</h5>
+                    <div class="table-container">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sector</th>
+                                    <th>Avg CAGR %</th>
+                                    <th>Avg Volatility %</th>
+                                    <th>Companies</th>
+                                    <th>Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sectorAnalysisTable">
+                                <tr><td colspan="5" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin pulse"></i> Loading...
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        console.log('🚀 NIFTY 500 Dashboard starting...');
+
+        // Utility functions
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = 
+                `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+        }
+
+        function getSectorColor(sector) {
+            const colors = {
+                'IT': '#58a6ff', 'Banking': '#3fb950', 'Energy': '#ff7b72',
+                'FMCG': '#d2a8ff', 'Pharmaceuticals': '#f0e68c', 'Automotive': '#79c0ff'
+            };
+            return colors[sector] || '#7d8590';
+        }
+
+        // Check system status
+        function checkSystemStatus() {
+            fetch('/api/test')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const sharpeStatus = data.sharpe_predictor_available ? '📊 Sharpe Predictor Ready' : '⚠️ Sharpe Predictor Training';
+                        document.getElementById('systemStatus').innerHTML = 
+                            `<i class="fas fa-check-circle text-success"></i> System Ready:500 companies`;
+                        document.getElementById('systemStatus').className = 'system-status success';
+                        
+                        // Update KPIs
+                        document.getElementById('totalCompanies').textContent = data.data_shape.split(' ')[0];
+                        document.getElementById('totalSectors').textContent = data.sectors;
+                        document.getElementById('topCAGR').textContent = data.top_cagr + '%';
+                        
+                        // Load components
+                        loadTopPerformers();
+                        loadSectorAnalysis();
+                        loadMonthlyPredictions();
+                        loadCharts();
+                    }
+                })
+                .catch(error => {
+                    console.error('System check failed:', error);
+                    document.getElementById('systemStatus').innerHTML = 
+                        `<i class="fas fa-exclamation-triangle text-danger"></i> Connection Error`;
+                });
+        }
+
+        // Load top performers
+        function loadTopPerformers(metric = 'CAGR') {
+            fetch(`/api/top_performers?metric=${metric}&limit=10`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    data.forEach((company, index) => {
+                        const sectorColor = getSectorColor(company.Sector);
+                        html += `
+                            <tr>
+                                <td><span class="badge bg-primary">${index + 1}</span></td>
+                                <td><strong>${company.Company}</strong></td>
+                                <td><span class="badge" style="background: ${sectorColor}">${company.Sector}</span></td>
+                                <td><span class="badge bg-success">${company.CAGR}%</span></td>
+                                <td><span class="badge bg-info">${company.Sharpe_Ratio || 'N/A'}</span></td>
+                            </tr>
+                        `;
+                    });
+                    document.getElementById('topPerformersTable').innerHTML = html;
+                    
+                    if (data.length > 0) {
+                        document.getElementById('topCAGRCompany').textContent = data[0].Company;
+                        const bestSharpe = data.reduce((prev, curr) => 
+                            (prev.Sharpe_Ratio > curr.Sharpe_Ratio) ? prev : curr);
+                        document.getElementById('bestSharpe').textContent = bestSharpe.Sharpe_Ratio || 'N/A';
+                        document.getElementById('bestSharpeCompany').textContent = bestSharpe.Company;
+                    }
+                })
+                .catch(error => showError('topPerformersTable', 'Failed to load data'));
+        }
+
+        // Load sector analysis
+        function loadSectorAnalysis() {
+            fetch('/api/sector_analysis')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    data.forEach(sector => {
+                        const riskLevel = (sector.Avg_Volatility || 0) > 30 ? 'High' : 
+                                        (sector.Avg_Volatility || 0) > 20 ? 'Medium' : 'Low';
+                        const riskColor = riskLevel === 'High' ? 'bg-danger' : 
+                                         riskLevel === 'Medium' ? 'bg-warning' : 'bg-success';
+                        
+                        html += `
+                            <tr>
+                                <td><strong style="color: ${getSectorColor(sector.Sector)}">${sector.Sector}</strong></td>
+                                <td><span class="badge bg-primary">${sector.Avg_CAGR || 'N/A'}%</span></td>
+                                <td><span class="badge bg-secondary">${sector.Avg_Volatility || 'N/A'}%</span></td>
+                                <td><span class="badge bg-dark">${sector.Companies || 'N/A'}</span></td>
+                                <td><span class="badge ${riskColor}">${riskLevel}</span></td>
+                            </tr>
+                        `;
+                    });
+                    document.getElementById('sectorAnalysisTable').innerHTML = html;
+                })
+                .catch(error => showError('sectorAnalysisTable', 'Failed to load sector data'));
+        }
+
+        // Load monthly predictions
+        function loadMonthlyPredictions() {
+            fetch('/api/monthly_predictions')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    data.forEach((prediction, index) => {
+                        html += `
+                            <div class="mb-3 p-3 border rounded" style="background: rgba(88, 166, 255, 0.1);">
+                                <h6><i class="fas fa-star text-warning"></i> #${index + 1} ${prediction.sector}</h6>
+                                <p class="mb-1"><strong>${prediction.company}</strong></p>
+                                <span class="badge bg-success">CAGR: ${prediction.expected_cagr}%</span>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('monthlyPredictions').innerHTML = html;
+                })
+                .catch(error => showError('monthlyPredictions', 'Failed to load predictions'));
+        }
+
+        // Load charts
+        function loadCharts() {
+            fetch('/api/charts/performance_scatter')
+                .then(response => response.json())
+                .then(fig => {
+                    fig.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+                    fig.layout.plot_bgcolor = 'rgba(0,0,0,0)';
+                    fig.layout.font = { color: '#e6edf3' };
+                    
+                    Plotly.newPlot('performanceChart', fig.data, fig.layout, {
+                        responsive: true,
+                        displayModeBar: false
+                    });
+                })
+                .catch(error => showError('performanceChart', 'Chart failed to load'));
+        }
+
+        // Handle CAGR prediction form
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                volatility: parseFloat(document.getElementById('volatility').value),
+                sharpe_ratio: parseFloat(document.getElementById('sharpe_ratio').value),
+                max_drawdown: parseFloat(document.getElementById('max_drawdown').value),
+                beta: parseFloat(document.getElementById('beta').value),
+                sector: document.getElementById('sector').value,
+                sortino_ratio: parseFloat(document.getElementById('sharpe_ratio').value) * 1.1,
+                skewness: 0, kurtosis: 0, momentum_3m: 0, momentum_6m: 0,
+                current_rsi: 50, volume_volatility: 0.5
+            };
+
+            document.getElementById('predictionResult').innerHTML = 
+                '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Predicting...</div>';
+
+            fetch('/api/predict_cagr', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const confidenceColor = data.confidence > 80 ? 'success' : 
+                                           data.confidence > 60 ? 'warning' : 'danger';
+                    
+                    document.getElementById('predictionResult').innerHTML = `
+                        <div class="alert alert-light border">
+                            <h6 class="text-primary">Prediction Result</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-primary">${data.predicted_cagr}%</h4>
+                                    <small>Predicted CAGR</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-${confidenceColor}">${data.confidence}%</h4>
+                                    <small>Confidence</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('predictionResult').innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('predictionResult').innerHTML = 
+                    '<div class="alert alert-danger">Network error occurred</div>';
+            });
+        });
+
+        // Handle Sharpe Ratio prediction form
+        document.getElementById('sharpePredictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                volatility: parseFloat(document.getElementById('sharpe_volatility').value),
+                cagr: parseFloat(document.getElementById('sharpe_cagr').value),
+                max_drawdown: parseFloat(document.getElementById('sharpe_max_drawdown').value),
+                beta: parseFloat(document.getElementById('sharpe_beta').value),
+                sector: document.getElementById('sharpe_sector').value
+            };
+
+            document.getElementById('sharpePredictionResult').innerHTML = 
+                '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Predicting Sharpe Ratio...</div>';
+
+            fetch('/api/predict_sharpe', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const sharpeColor = data.predicted_sharpe >= 1.0 ? 'success' : 
+                                       data.predicted_sharpe >= 0.5 ? 'warning' : 'danger';
+                    
+                    document.getElementById('sharpePredictionResult').innerHTML = `
+                        <div class="alert alert-light border">
+                            <h6 class="text-primary">Next 30-Day Sharpe Ratio Prediction</h6>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h4 class="text-${sharpeColor}">${data.predicted_sharpe}</h4>
+                                    <small>Predicted Sharpe</small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-info">${data.confidence}%</h4>
+                                    <small>Confidence</small>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">${data.interpretation}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('sharpePredictionResult').innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('sharpePredictionResult').innerHTML = 
+                    '<div class="alert alert-danger">Network error occurred</div>';
+            });
+        });
+
+        // Metric selector change
+        document.getElementById('metricSelector').addEventListener('change', function() {
+            loadTopPerformers(this.value);
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard initialized');
+            checkSystemStatus();
+        });
+    </script>
+</body>
+</html>

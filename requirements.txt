@@ -1,0 +1,13 @@
+
+numpy
+scikit-learn
+mlflow
+dvc
+flask
+plotly
+boto3
+beautifulsoup4
+requests
+joblib
+matplotlib
+seaborn

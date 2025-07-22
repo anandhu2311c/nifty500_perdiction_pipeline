@@ -1,0 +1,34 @@
+# dvc.yaml
+stages:
+  data_collection:
+    cmd: python src/data_collection.py
+    deps:
+    - src/data_collection.py
+    outs:
+    - data/raw/
+
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - src/data_preprocessing.py
+    - data/raw/
+    outs:
+    - data/processed/
+
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - src/feature_engineering.py
+    - data/processed/
+    outs:
+    - data/features/
+
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - src/model_training.py
+    - data/features/comprehensive_features.csv
+    outs:
+    - models/
+    metrics:
+    - models/model_performance_summary.csv
