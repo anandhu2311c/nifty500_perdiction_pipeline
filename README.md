@@ -1,6 +1,6 @@
 # NIFTY 500 Advanced Stock Analysis & ML Platform
 
-[![CI/CD Pipeline](https://github.com/username/nifty500-ml-platform/actions/workflows/main.yml/badge.nifty500-ml-platform/actionsshields.io/badge/python-3.9+-blue.svg](https://img.shields.io/badgeldschine learning platform for analyzing and predicting NIFTY 500 stock performance using 15+ years of historical data. Built with modern MLOps practices including MLflow, DVC, and AWS cloud infrastructure.
+Learning platform for analyzing and predicting NIFTY 500 stock performance using 15+ years of historical data. Built with modern MLOps practices including MLflow, DVC, and AWS cloud infrastructure.
 
 ## 🚀 Features
 
