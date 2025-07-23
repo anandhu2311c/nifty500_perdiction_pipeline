@@ -309,13 +309,6 @@ python src/data_validation.py
 - **Data Encryption**: In-transit and at-rest
 - **Secrets Management**: AWS Secrets Manager
 
-## 📚 Documentation
-
-- [API Documentation](docs/api.md)
-- [Model Documentation](docs/models.md)
-- [Deployment Guide](docs/deployment.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
-
 ## 🤝 Contributing
 
 1. Fork the repository
