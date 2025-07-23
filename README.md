@@ -341,10 +341,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Open source ML community
 - AWS for cloud infrastructure
 
-## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/username/nifty500-ml-platform/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/username/nifty500-ml-platform/discussions)
-- **Email**: support@nifty500platform.com
-
-**Built with ❤️ for the Indian stock market analysis community**
+**Built with ❤️ by Anandhu and Abhinitha for the Indian stock market analysis community**
