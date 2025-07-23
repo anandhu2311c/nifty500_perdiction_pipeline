@@ -31,9 +31,9 @@ Learning platform for analyzing and predicting NIFTY 500 stock performance using
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │      DVC        │    │     MLflow      │    │   AWS Cloud     │
 │                 │    │                 │    │                 │
-│ • Data Version  │    │ • Experiment    │    │ • ECS/Fargate   │
-│ • Pipeline      │    │   Tracking      │    │ • Load Balancer │
-│   Management    │    │ • Model Registry│    │ • Auto Scaling  │
+│ • Data Version  │    │ • Experiment    │    │ • ECS           │
+│ • Pipeline      │    │   Tracking      │    │                 │
+│   Management    │    │ • Model Registry│    │                 │
 │ • Reproducible  │    │ • Metrics       │    │ • CloudWatch    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
@@ -148,13 +148,13 @@ nifty500-ml-platform/
 Predicts compound annual growth rate using:
 - **Features**: Volatility, Sharpe ratio, Beta, sector classification
 - **Algorithm**: Random Forest with hyperparameter tuning
-- **Performance**: R² = 0.85, RMSE = 5.2%
+- **Performance**: R² = 0.71
 
 ### Sharpe Ratio Predictor
 Forecasts 30-day risk-adjusted returns:
 - **Features**: Technical indicators, market momentum, volume patterns
 - **Algorithm**: Gradient Boosting Regressor
-- **Performance**: R² = 0.78, MAE = 0.21
+- **Performance**: R² = 0.68
 
 ### Feature Engineering
 ```python
@@ -207,11 +207,10 @@ result = response.json()
 ### Infrastructure Components
 
 - **ECS Fargate**: Serverless container hosting
-- **Application Load Balancer**: Traffic distribution
 - **ECR**: Container image registry
-- **S3**: Data lake and model storage
+- **S3**: Model storage
 - **CloudWatch**: Monitoring and logging
-- **Lambda**: Automated model training
+
 
 ### Deployment Commands
 
@@ -292,8 +291,8 @@ python src/data_validation.py
 ## 📈 Performance Metrics
 
 ### Model Performance
-- **CAGR Model**: R² = 0.85, RMSE = 5.2%
-- **Sharpe Model**: R² = 0.78, MAE = 0.21
+- **CAGR Model**: R² = 0.71
+- **Sharpe Model**: R² = 0.68
 - **Training Time**: < 10 minutes
 - **Inference Time**: < 100ms
 
@@ -301,7 +300,6 @@ python src/data_validation.py
 - **Response Time**: < 200ms (95th percentile)
 - **Throughput**: 1000+ requests/second
 - **Uptime**: 99.9% SLA
-- **Auto-scaling**: 2-10 containers
 
 ## 🔒 Security
 
